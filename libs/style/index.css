@@ -258,7 +258,7 @@ ul {
 .hero {
     height: 100vh;
     min-height: 600px;
-    background: url('photos/hero.jpg') no-repeat center center/cover;
+    background: url('bg/hero.jpg') no-repeat center center/cover;
     position: relative;
     display: flex;
     align-items: center;
