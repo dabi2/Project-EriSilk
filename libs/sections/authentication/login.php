@@ -3,13 +3,30 @@
 session_start();
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Dummy authentication for demonstration
-    $username = $_POST['username'] ?? '';
+    $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
-    // Replace this with your real authentication logic
-    if ($username === 'user' && $password === 'password') {
-        $_SESSION['user_id'] = 1; // Example user ID
-        header('Location: ../../account.php');
+
+    // Database connection
+    $host = 'localhost';
+    $db   = 'riandlast';
+    $user = 'root';
+    $pass = '';
+    $dsn  = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+    try {
+        $pdo = new PDO($dsn, $user, $pass);
+    } catch (PDOException $e) {
+        die("Database connection failed: " . $e->getMessage());
+    }
+
+    // Check user credentials
+    $stmt = $pdo->prepare("SELECT id, password FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        // Redirect to home page
+        header("Location: ../../index.php");
         exit();
     } else {
         $error = 'Invalid username or password.';

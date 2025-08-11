@@ -2,8 +2,22 @@
 session_start();
 $error = '';
 $success = '';
+$error = '';
+$success = '';
+
+// 1. Database connection
+$host = 'localhost';
+$db   = 'riandlast';
+$user = 'root';
+$pass = '';
+$dsn  = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+try {
+    $pdo = new PDO($dsn, $user, $pass);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Example: Validate and "register" user (replace with real DB logic)
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -16,84 +30,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm) {
         $error = 'Passwords do not match.';
     } else {
-        // TODO: Save user to database, check for duplicates, hash password
-        $success = 'Account created successfully! You can now <a href="login.php">login</a>.';
+        // 2. Check for duplicate username/email
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
+        $stmt->execute([$username, $email]);
+        if ($stmt->fetch()) {
+            $error = 'Username or email already exists.';
+        } else {
+            // 3. Hash password and insert user
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+            if ($stmt->execute([$username, $email, $hashed])) {
+                $success = 'Account created successfully! You can now <a href="login.php">login</a>.';
+            } else {
+                $error = 'Registration failed. Please try again.';
+            }
+        }
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-
-    <style>
-        .login-title {
-            font-family: 'Playfair Display', serif;
-            color: var(--secondary-color);
-            letter-spacing: 1px;
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 2rem;
-        }
-
-        .login-form label {
-            font-family: 'Montserrat', sans-serif;
-            color: var(--primary-color);
-            font-size: 1.05rem;
-            font-weight: 700;
-            margin-bottom: 0.4rem;
-        }
-
-        .login-form input {
-            background: #f9f5f0;
-            border: 1.5px solid var(--primary-color);
-            color: var(--dark-color);
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.05rem;
-        }
-
-        .login-form input:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 2px rgba(180, 140, 90, 0.15);
-        }
-
-        .login-btn {
-            background: linear-gradient(90deg, var(--primary-color) 60%, var(--secondary-color) 100%);
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(180, 140, 90, 0.08);
-        }
-
-        .login-btn:hover {
-            background: var(--secondary-color);
-            color: var(--primary-color);
-        }
-
-        .login-links a {
-            font-family: 'Montserrat', sans-serif;
-            color: var(--secondary-color);
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .login-error {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.05rem;
-            border-left: 4px solid var(--secondary-color);
-        }
-    </style>
-
     <meta charset="UTF-8">
     <title>Create Account | Eri Silk</title>
     <link rel="stylesheet" href="../../sections/authentication/style/login-style.css">
+    <link rel="stylesheet" href="../../style/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
 <body>
     <div class="login-container">
         <div class="login-title"><i class="fas fa-user-plus"></i> Create Account</div>
@@ -118,5 +81,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </body>
-
 </html>
