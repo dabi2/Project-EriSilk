@@ -4,8 +4,6 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: sections/authentication/login.php");
     exit();
 }
-
-// Example: Fetch cart items from database (replace with your logic)
 $host = 'localhost';
 $db   = 'riandlast';
 $user = 'root';
@@ -25,12 +23,12 @@ $stmt = $pdo->prepare("SELECT c.id, p.name, p.image, p.price, c.quantity
 $stmt->execute([$user_id]);
 $cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Calculate total
 $total = 0;
 foreach ($cart_items as $item) {
     $total += $item['price'] * $item['quantity'];
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 

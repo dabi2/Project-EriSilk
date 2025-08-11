@@ -1,5 +1,4 @@
 <?php
-// session_start();
 $user_info = null;
 if (isset($_SESSION['user_id'])) {
     // Database connection
@@ -23,7 +22,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="container">
         <div class="header-inner">
             <div class="logo">
-                <a href="#">
+                <a href="../../libs/index.php">
                     <span class="eri">ERI</span><span class="silk">SILK</span>
                 </a>
             </div>

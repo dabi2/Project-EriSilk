@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,6 +11,7 @@
     <link rel="stylesheet" href="style/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <?php include 'sections/head.php'; ?>
+
 </head>
 
 <body>
@@ -39,7 +43,7 @@
             </div>
             <div class="collections-grid">
                 <!-- Collection Item 1 -->
-                <div class="collection-item">
+                <div class="collection-item" data-product-id="1">
                     <div class="collection-image">
                         <img src="photos/sample.jpg" alt="Traditional Silk Dress">
                         <div class="collection-overlay">
@@ -57,7 +61,7 @@
                 </div>
 
                 <!-- Collection Item 2 -->
-                <div class="collection-item">
+                <div class="collection-item" data-product-id="2">
                     <div class="collection-image">
                         <img src="photos/sampletype2green.jpg" alt="Silk Saree">
                         <div class="collection-overlay">
@@ -75,7 +79,7 @@
                 </div>
 
                 <!-- Collection Item 3 -->
-                <div class="collection-item">
+                <div class="collection-item" data-product-id="3">
                     <div class="collection-image">
                         <img src="photos/sampletype3blue.jpg" alt="Silk Handbag">
                         <div class="collection-overlay">
@@ -258,29 +262,46 @@
 
             // Cart functionality
             const cartCount = document.querySelector('.cart-count');
-            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || 0;
-            updateCartCount();
+            let cartItems = 0;
 
-            // Add to cart buttons
-            const addToCartButtons = document.querySelectorAll('.collection-actions .fa-shopping-bag');
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
+            const addToCartButtons = document.querySelectorAll('.collection-actions .btn-icon .fa-shopping-bag');
+            addToCartButtons.forEach(icon => {
+                icon.parentElement.addEventListener('click', function(e) {
                     e.preventDefault();
-                    cartItems++;
-                    updateCartCount();
-                    showAddToCartToast(button);
+                    const productId = this.closest('.collection-item').dataset.productId;
+                    fetch('libs/users-libraries/add-to-cart.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: 'product_id=' + encodeURIComponent(productId)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                cartItems = data.cart_count;
+                                cartCount.textContent = cartItems;
+                                showAddToCartToast(this);
+                            } else {
+                                showAddToCartToast(this, 'Failed to add to cart');
+                            }
+                        })
+                        .catch(() => {
+                            showAddToCartToast(this, 'Error adding to cart');
+                        });
                 });
             });
 
             function updateCartCount() {
                 cartCount.textContent = cartItems;
-                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                // Optionally, remove localStorage if you want only server-side count
+                // localStorage.setItem('cartItems', JSON.stringify(cartItems));
             }
 
-            function showAddToCartToast(button) {
+            function showAddToCartToast(button, message = 'Added to cart') {
                 const toast = document.createElement('div');
                 toast.className = 'toast';
-                toast.textContent = 'Added to cart';
+                toast.textContent = message;
                 document.body.appendChild(toast);
 
                 // Position the toast near the clicked button
@@ -302,14 +323,15 @@
             }
 
             // Wishlist functionality
-            const wishlistButtons = document.querySelectorAll('.collection-actions .fa-heart');
-            wishlistButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
+            // Select all wishlist buttons
+            const wishlistButtons = document.querySelectorAll('.collection-actions .btn-icon .fa-heart');
+            wishlistButtons.forEach(icon => {
+                icon.parentElement.addEventListener('click', function(e) {
                     e.preventDefault();
-                    this.classList.toggle('far');
-                    this.classList.toggle('fas');
+                    icon.classList.toggle('far');
+                    icon.classList.toggle('fas');
 
-                    if (this.classList.contains('fas')) {
+                    if (icon.classList.contains('fas')) {
                         showWishlistToast('Added to wishlist');
                     } else {
                         showWishlistToast('Removed from wishlist');
