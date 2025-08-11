@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($error): ?>
             <div class="login-error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
-        <form class="login-form" method="post" autocomplete="off">
+        <form class="login-form"  method="post" autocomplete="off">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required autofocus>
             <label for="password">Password</label>
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         <div class="login-links">
             <a href="#">Forgot Password?</a> | 
-            <a href="#">Create Account</a>
+            <a href="create_account.php">Create Account</a>
         </div>
     </div>
 </body>
