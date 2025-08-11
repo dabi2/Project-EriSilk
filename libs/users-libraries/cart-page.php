@@ -33,9 +33,11 @@ foreach ($cart_items as $item) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Your Cart | Eri Silk</title>
+    <?php include '../sections/head.php'; ?>
     <link rel="stylesheet" href="../sections/authentication/style/login-style.css">
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -49,6 +51,7 @@ foreach ($cart_items as $item) {
             max-width: 700px;
             margin: 2rem auto;
         }
+
         .cart-title {
             font-family: "Playfair Display", serif;
             color: var(--primary-color);
@@ -57,29 +60,36 @@ foreach ($cart_items as $item) {
             font-size: 2.2rem;
             font-weight: 700;
         }
+
         .cart-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 2rem;
         }
-        .cart-table th, .cart-table td {
+
+        .cart-table th,
+        .cart-table td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid #eee;
             font-family: 'Montserrat', sans-serif;
         }
+
         .cart-table th {
             background: var(--light-color);
             color: var(--primary-color);
             font-size: 1.1rem;
         }
+
         .cart-table img {
             width: 60px;
             border-radius: 8px;
         }
+
         .cart-actions {
             text-align: right;
         }
+
         .cart-total {
             font-size: 1.3rem;
             font-weight: 700;
@@ -87,6 +97,7 @@ foreach ($cart_items as $item) {
             margin-bottom: 2rem;
             text-align: right;
         }
+
         .checkout-btn {
             background: var(--primary-color);
             color: #fff;
@@ -99,10 +110,12 @@ foreach ($cart_items as $item) {
             transition: background var(--transition);
             float: right;
         }
+
         .checkout-btn:hover {
             background: var(--secondary-color);
             color: var(--primary-color);
         }
+
         .empty-cart {
             text-align: center;
             color: var(--text-color);
@@ -111,6 +124,7 @@ foreach ($cart_items as $item) {
         }
     </style>
 </head>
+
 <body>
     <div class="cart-container">
         <div class="cart-title"><i class="fas fa-shopping-cart"></i> Your Cart</div>
@@ -129,21 +143,21 @@ foreach ($cart_items as $item) {
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($cart_items as $item): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($item['name']); ?></td>
-                        <td><img src="<?php echo htmlspecialchars($item['image']); ?>" alt="Product"></td>
-                        <td>₹<?php echo number_format($item['price'], 2); ?></td>
-                        <td><?php echo $item['quantity']; ?></td>
-                        <td>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
-                        <td>
-                            <form method="post" action="remove_from_cart.php" style="display:inline;">
-                                <input type="hidden" name="cart_id" value="<?php echo $item['id']; ?>">
-                                <button type="submit" class="login-btn" style="padding:0.4rem 1rem;font-size:0.95rem;">Remove</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($cart_items as $item): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($item['name']); ?></td>
+                            <td><img src="<?php echo htmlspecialchars($item['image']); ?>" alt="Product"></td>
+                            <td>₹<?php echo number_format($item['price'], 2); ?></td>
+                            <td><?php echo $item['quantity']; ?></td>
+                            <td>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
+                            <td>
+                                <form method="post" action="remove_from_cart.php" style="display:inline;">
+                                    <input type="hidden" name="cart_id" value="<?php echo $item['id']; ?>">
+                                    <button type="submit" class="login-btn" style="padding:0.4rem 1rem;font-size:0.95rem;">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
             <div class="cart-total">Total: ₹<?php echo number_format($total, 2); ?></div>
@@ -153,4 +167,5 @@ foreach ($cart_items as $item) {
         <?php endif; ?>
     </div>
 </body>
+
 </html>
