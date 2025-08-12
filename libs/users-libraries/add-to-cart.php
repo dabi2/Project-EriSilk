@@ -16,6 +16,7 @@ if ($product_id > 0) {
     $dsn  = "mysql:host=$host;dbname=$db;charset=utf8mb4";
     $pdo = new PDO($dsn, $user, $pass);
 
+    // Check if already in cart
     $stmt = $pdo->prepare("SELECT id FROM cart WHERE user_id = ? AND product_id = ?");
     $stmt->execute([$user_id, $product_id]);
     $item = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,6 +29,7 @@ if ($product_id > 0) {
         $stmt->execute([$user_id, $product_id]);
     }
 
+    // Get new cart count
     $stmt = $pdo->prepare("SELECT SUM(quantity) FROM cart WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $cart_count = $stmt->fetchColumn() ?: 0;

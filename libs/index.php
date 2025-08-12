@@ -269,7 +269,7 @@ session_start();
                 icon.parentElement.addEventListener('click', function(e) {
                     e.preventDefault();
                     const productId = this.closest('.collection-item').dataset.productId;
-                    fetch('libs/users-libraries/add-to-cart.php', {
+                    fetch('users-libraries/add-to-cart.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -278,6 +278,7 @@ session_start();
                         })
                         .then(response => response.json())
                         .then(data => {
+                            console.log(data);
                             if (data.success) {
                                 cartItems = data.cart_count;
                                 cartCount.textContent = cartItems;

@@ -9,11 +9,7 @@ $db   = 'riandlast';
 $user = 'root';
 $pass = '';
 $dsn  = "mysql:host=$host;dbname=$db;charset=utf8mb4";
-try {
-    $pdo = new PDO($dsn, $user, $pass);
-} catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
-}
+$pdo = new PDO($dsn, $user, $pass);
 
 $user_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare("SELECT c.id, p.name, p.image, p.price, c.quantity 
@@ -36,6 +32,7 @@ foreach ($cart_items as $item) {
     <meta charset="UTF-8">
     <title>Your Cart | Eri Silk</title>
     <?php include '../sections/head.php'; ?>
+    <link rel="stylesheet" href="cart-page.css">
     <link rel="stylesheet" href="../sections/authentication/style/login-style.css">
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -144,9 +141,16 @@ foreach ($cart_items as $item) {
                     <?php foreach ($cart_items as $item): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($item['name']); ?></td>
-                            <td><img src="<?php echo htmlspecialchars($item['image']); ?>" alt="Product"></td>
+                            <td><img src="../<?php echo htmlspecialchars($item['image']); ?>" alt="Product image" width="60"></td>
                             <td>₹<?php echo number_format($item['price'], 2); ?></td>
-                            <td><?php echo $item['quantity']; ?></td>
+                            <td>
+                                <form class="form-cart-container" method="post" action="update_cart_quantity.php" style="display:inline-flex; align-items:center;">
+                                    <input type="hidden" name="cart_id" value="<?php echo $item['id']; ?>">
+                                    <button type="submit" name="action" value="decrease" class="qty-btn" style="padding:0 8px;">-</button>
+                                    <span style="margin:0 8px;"><?php echo $item['quantity']; ?></span>
+                                    <button type="submit" name="action" value="increase" class="qty-btn" style="padding:0 8px;">+</button>
+                                </form>
+                            </td>
                             <td>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
                             <td>
                                 <form method="post" action="remove_from_cart.php" style="display:inline;">
