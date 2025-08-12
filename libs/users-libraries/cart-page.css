@@ -1,35 +1,49 @@
 /* Quantity buttons styling */
 .qty-btn {
-    background: var(--primary-color);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 2px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 2px;
 }
 
 .qty-btn:hover {
-    background: var(--secondary-color);
-    color: var(--primary-color);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Quantity number styling */
 .cart-table td span {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    min-width: 32px;
-    text-align: center;
-    display: inline-block;
-    font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  min-width: 32px;
+  text-align: center;
+  display: inline-block;
+  font-family: "Playfair Display", serif;
 }
 
+.cart-table td:nth-child(3),
+.cart-table td:nth-child(5) {
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+/* Product name styling */
+.cart-table td:first-child {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  font-family: "Playfair Display", serif;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+}

@@ -146,11 +146,12 @@ foreach ($cart_items as $item) {
                             <td>
                                 <form class="form-cart-container" method="post" action="update_cart_quantity.php" style="display:inline-flex; align-items:center;">
                                     <input type="hidden" name="cart_id" value="<?php echo $item['id']; ?>">
-                                    <button type="submit" name="action" value="decrease" class="qty-btn" style="padding:0 8px;">-</button>
-                                    <span style="margin:0 8px;"><?php echo $item['quantity']; ?></span>
-                                    <button type="submit" name="action" value="increase" class="qty-btn" style="padding:0 8px;">+</button>
+                                    <button type="submit" name="action" value="decrease" class="qty-btn">-</button>
+                                    <span><?php echo $item['quantity']; ?></span>
+                                    <button type="submit" name="action" value="increase" class="qty-btn">+</button>
                                 </form>
                             </td>
+
                             <td>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
                             <td>
                                 <form method="post" action="remove_from_cart.php" style="display:inline;">
