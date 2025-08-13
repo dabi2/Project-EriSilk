@@ -23,12 +23,17 @@ $total = 0;
 foreach ($cart_items as $item) {
     $total += $item['price'] * $item['quantity'];
 }
+
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <meta charset="UTF-8">
     <title>Your Cart | Eri Silk</title>
     <?php include '../sections/head.php'; ?>
@@ -154,9 +159,9 @@ foreach ($cart_items as $item) {
 
                             <td>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
                             <td>
-                                <form method="post" action="remove_from_cart.php" style="display:inline;">
+                                <form method="post" action="remove_from_cart.php" class="remove-form" style="display:inline;">
                                     <input type="hidden" name="cart_id" value="<?php echo $item['id']; ?>">
-                                    <button type="submit" class="login-btn" style="padding:0.4rem 1rem;font-size:0.95rem;">Remove</button>
+                                    <button type="submit" class="login-btn remove-btn" style="padding:0.4rem 1rem;font-size:0.95rem;" data-id="<?php echo $item['id']; ?>">Remove</button>
                                 </form>
                             </td>
                         </tr>
@@ -165,10 +170,126 @@ foreach ($cart_items as $item) {
             </table>
             <div class="cart-total">Total: ₹<?php echo number_format($total, 2); ?></div>
             <div class="cart-actions">
-                <a href="checkout.php"><button class="checkout-btn">Proceed to Checkout</button></a>
+                <form id="checkout-form" method="post" action="checkout.php">
+                    <input type="hidden" name="cart_data" value="<?php echo htmlspecialchars($encryptedCart); ?>">
+                    <button type="button" id="checkout-btn" class="checkout-btn">Proceed to Checkout</button>
+                </form>
             </div>
+
+
         <?php endif; ?>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".remove-form").forEach(form => {
+                form.addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    let row = form.closest("tr");
+                    let formData = new FormData(form);
+
+                    Swal.fire({
+                        title: 'Remove item?',
+                        text: "Are you sure you want to remove this product from your cart?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, remove it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch("remove_from_cart.php", {
+                                    method: "POST",
+                                    body: formData
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.status === "success") {
+                                        // Get subtotal of removed item
+                                        let subtotalCell = row.querySelector("td:nth-child(5)");
+                                        let subtotalValue = parseFloat(subtotalCell.textContent.replace(/[^0-9.-]+/g, ""));
+
+                                        // Remove row
+                                        row.remove();
+
+                                        // Update total
+                                        let totalEl = document.querySelector(".cart-total");
+                                        if (totalEl) {
+                                            let currentTotal = parseFloat(totalEl.textContent.replace(/[^0-9.-]+/g, ""));
+                                            let newTotal = currentTotal - subtotalValue;
+
+                                            if (newTotal <= 0) {
+                                                // Cart empty state
+                                                document.querySelector(".cart-table").remove();
+                                                totalEl.remove();
+
+                                                let cartActions = document.querySelector(".cart-actions");
+                                                if (cartActions) cartActions.remove();
+
+                                                let emptyMessage = document.createElement("div");
+                                                emptyMessage.className = "empty-cart";
+                                                emptyMessage.textContent = "Your cart is empty.";
+                                                document.querySelector(".cart-container").appendChild(emptyMessage);
+                                            } else {
+                                                totalEl.textContent = "Total: ₹" + newTotal.toFixed(2);
+                                            }
+                                        }
+
+                                        Swal.fire({
+                                            title: 'Removed!',
+                                            text: 'The product has been removed from your cart.',
+                                            icon: 'success',
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        });
+                                    } else {
+                                        Swal.fire('Error', 'Something went wrong.', 'error');
+                                    }
+                                })
+                                .catch(() => {
+                                    Swal.fire('Error', 'Request failed.', 'error');
+                                });
+                        }
+                    });
+                });
+            });
+        });
+
+
+
+        // check out sections
+        // document.getElementById('checkout-btn').addEventListener('click', function() {
+        //     const cartRows = document.querySelectorAll('.cart-table tbody tr');
+
+        //     if (cartRows.length === 0) {
+        //         Swal.fire({
+        //             icon: 'warning',
+        //             title: 'Your cart is empty!',
+        //             text: 'Please add some products before proceeding to checkout.',
+        //             confirmButtonText: 'OK'
+        //         });
+        //         return;
+        //     }
+
+        //     Swal.fire({
+        //         title: 'Proceed to Checkout?',
+        //         text: "You'll be redirected to the checkout page.",
+        //         icon: 'question',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Yes, proceed',
+        //         cancelButtonText: 'Cancel'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             document.getElementById('checkout-form').submit();
+        //         }
+        //     });
+        // });
+    </script>
+
+
 </body>
+
+
 
 </html>
