@@ -170,11 +170,12 @@ foreach ($cart_items as $item) {
             </table>
             <div class="cart-total">Total: ₹<?php echo number_format($total, 2); ?></div>
             <div class="cart-actions">
-                <form id="checkout-form" method="post" action="checkout.php">
-                    <input type="hidden" name="cart_data" value="<?php echo htmlspecialchars($encryptedCart); ?>">
-                    <button type="button" id="checkout-btn" class="checkout-btn">Proceed to Checkout</button>
+                <form id="checkout-form" method="post" action="order.php">
+                    <input type="hidden" name="cart_data" value="<?php echo htmlspecialchars(json_encode($cart_items)); ?>">
+                    <button type="submit" class="checkout-btn">Proceed to Checkout</button>
                 </form>
             </div>
+
 
 
         <?php endif; ?>
@@ -256,21 +257,37 @@ foreach ($cart_items as $item) {
             });
         });
 
+        let totalAmount = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        // 1️⃣ Check if user is logged in
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Logged In',
+                text: 'Please log in to proceed to checkout.',
+                showCancelButton: true,
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'login.php'; // Redirect to login page
+                }
+            });
+            return; // Stop further actions if not logged in
+        <?php endif; ?>
 
 
         // check out sections
-        // document.getElementById('checkout-btn').addEventListener('click', function() {
-        //     const cartRows = document.querySelectorAll('.cart-table tbody tr');
+        const cartRows = document.querySelectorAll('.cart-table tbody tr');
 
-        //     if (cartRows.length === 0) {
-        //         Swal.fire({
-        //             icon: 'warning',
-        //             title: 'Your cart is empty!',
-        //             text: 'Please add some products before proceeding to checkout.',
-        //             confirmButtonText: 'OK'
-        //         });
-        //         return;
-        //     }
+        if (cartRows.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Your cart is empty!',
+                text: 'Please add some products before proceeding to checkout.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
 
         //     Swal.fire({
         //         title: 'Proceed to Checkout?',
